@@ -12,6 +12,7 @@ import org.hibernate.annotations.AnyKeyJavaClass;
 import java.util.UUID;
 
 @Entity
+@Table(name = "ownership")
 public class Ownership {
 
     @Id

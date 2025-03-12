@@ -12,10 +12,11 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
+@Table(name = "company")
 public class Company implements Owner {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @NotNull(message = "Name cannot be null")
