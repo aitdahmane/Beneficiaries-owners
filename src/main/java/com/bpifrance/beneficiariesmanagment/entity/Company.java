@@ -30,4 +30,25 @@ public class Company implements Owner {
     public UUID getId() {
         return id;
     }
+
+    public List<Ownership> getOwners() {
+        return owners;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setOwners(List<Ownership> owners) {
+        this.owners = owners;
+    }
+
 }
