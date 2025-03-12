@@ -15,6 +15,9 @@ public class OwnerDTO {
         this.ownershipPercentage = ownershipPercentage;
     }
 
+    public OwnerDTO() {
+    }
+
     public UUID getId() {
         return id;
     }
