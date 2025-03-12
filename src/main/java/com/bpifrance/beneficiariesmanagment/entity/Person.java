@@ -86,4 +86,8 @@ public class Person implements Owner {
     public void setAddress(String address) {
         this.address = address;
     }
+
+    public String getName() {
+        return firstName + " " + lastName;
+    }
 }

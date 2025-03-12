@@ -1,5 +1,6 @@
 package com.bpifrance.beneficiariesmanagment.service;
 
+import com.bpifrance.beneficiariesmanagment.dto.OwnerDTO;
 import com.bpifrance.beneficiariesmanagment.entity.Company;
 import com.bpifrance.beneficiariesmanagment.entity.Owner;
 import com.bpifrance.beneficiariesmanagment.entity.Ownership;
@@ -18,6 +19,49 @@ public class OwnershipCalculator {
     private final CompanyRepository companyRepository;
     private final PersonRepository personRepository;
     private final OwnershipRepository ownershipRepository;
+
+    public List<OwnerDTO> getAllOwners(Company company) {
+        Company freshCompany = companyRepository.findById(company.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+
+        List<OwnerDTO> owners = new ArrayList<>();
+        for (Ownership ownership : freshCompany.getOwners()) {
+            Owner owner = ownership.getOwner();
+            if (owner instanceof Person) {
+                Person person = (Person) owner;
+                owners.add(new OwnerDTO(person.getId(), person.getName(), "PERSON", ownership.getPercentage()));
+            } else if (owner instanceof Company) {
+                Company ownerCompany = (Company) owner;
+                owners.add(new OwnerDTO(ownerCompany.getId(), ownerCompany.getName(), "COMPANY", ownership.getPercentage()));
+            }
+        }
+        return owners;
+    }
+
+    public List<OwnerDTO> getIndividualOwners(Company company) {
+        Company freshCompany = companyRepository.findById(company.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Company not found"));
+
+        List<OwnerDTO> owners = new ArrayList<>();
+        Map<Person, Float> individualOwnerships = new HashMap<>();
+        calculateRecursive(freshCompany, 100.0f, individualOwnerships, new HashSet<>());
+
+        for (Map.Entry<Person, Float> entry : individualOwnerships.entrySet()) {
+            owners.add(new OwnerDTO(entry.getKey().getId(), entry.getKey().getName(), "PERSON", entry.getValue()));
+        }
+        return owners;
+    }
+
+    public List<OwnerDTO> getEffectiveOwners(Company company) {
+        Map<Person, Float> effectiveOwnership = calculateEffectiveOwnership(company);
+        List<OwnerDTO> owners = new ArrayList<>();
+
+        for (Map.Entry<Person, Float> entry : effectiveOwnership.entrySet()) {
+            owners.add(new OwnerDTO(entry.getKey().getId(), entry.getKey().getName(), "PERSON", entry.getValue()));
+        }
+        return owners;
+    }
+
 
 
     public OwnershipCalculator(CompanyRepository companyRepository,
